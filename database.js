@@ -64,11 +64,32 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
         db.run(`CREATE TABLE customer (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
+            address TEXT,
             email TEXT NOT NULL UNIQUE,
-            creditCardNumber TEXT NOT NULL
+            dateOfBirth TEXT,
+            gender TEXT,
+            age INTEGER,
+            cardHolderName TEXT,
+            cardNumber TEXT,
+            expiryDate TEXT,
+            cvv TEXT,
+            timeStamp TEXT
         )`, (err) => {
             if (!err) {
-                console.log("Customer table created.");
+                var insert = 'INSERT INTO customer (name, address, email, dateOfBirth, gender, age, cardHolderName, cardNumber, expiryDate, cvv, timeStamp) VALUES (?,?,?,?,?,?,?,?,?,?,?)';
+                db.run(insert, [
+                    "Dulneth Ransilu",
+                    "354 Temple Road, Colombo",
+                    "dulnethransilu@gmail.com",
+                    "2000.02.24",
+                    "male",
+                    "23",
+                    "D.Ransilu",
+                    "123456789012",
+                    "2025.02.24",
+                    "123",
+                    "2022.02.24 10:00:00"
+                ]);
             }
         });
     }
