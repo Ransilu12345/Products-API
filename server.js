@@ -352,10 +352,10 @@ app.post("/api/customers/", (req, res, next) => {
             timeStamp
         ];
 
-        // Execute the query
+        // Execute the SQL query
         db.run(sql, params, function (err) {
             if (err) {
-                // Handle database errors
+                
                 if (err.message.includes("UNIQUE constraint failed")) {
                     return res.status(400).json({
                         error: "Email already exists."
@@ -366,14 +366,14 @@ app.post("/api/customers/", (req, res, next) => {
                 });
             }
 
-            // Success response
+           
             res.status(201).json({
                 message: `Customer ${name} has registered`,
                 customerId: this.lastID
             });
         });
     } catch (E) {
-        // Handle unexpected errors
+        
         res.status(400).json({
             error: "An unexpected error occurred",
             details: E.message
