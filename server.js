@@ -1,5 +1,5 @@
-var express = require("express")
-var app = express()
+const express = require("express");
+const app = express();
 var db = require("./database.js")
 var cron = require('node-cron');
 var bodyParser = require("body-parser");
@@ -13,7 +13,8 @@ app.use(cors({
     origin: '*'
 }));
 
-
+// Middleware to parse JSON request bodies
+app.use(express.json());
 
 // Start server
 app.listen(HTTP_PORT, () => {
@@ -283,44 +284,45 @@ app.delete("/api/suppliers/deleteAll/:id", (req, res, next) => {
     }
 });
 
-app.post("/api/customers/", (req, res, next) => {
+
+app.get("/api/customer/", (req, res, next) => {
     try {
+        var sql = "select * from customer"
+        var params = []
+        db.all(sql, params, (err, rows) => {
+            if (err) {
+                res.status(400).json({ "error": err.message });
+                return;
+            }
+            res.json({
+                "message": "success",
+                "data": rows
+            })
+        });
+    } catch (E) {
+        res.status(400).send(E);
+    }
+
+});
+
+app.post("/api/customer/", (req, res, next) => {
+    try {
+        console.log("Request body:", req.body);
+
+
         const {
-            name,
-            address,
-            email,
-            dateOfBirth,
-            gender,
-            age,
-            cardHolderName,
-            cardNumber,
-            expiryDate,
-            cvv,
-            timeStamp
+            name = "Dulneth Ransilu",
+            address = "354 Temple Road, Colombo",
+            email = `dulnethransilu@gmail.com`,
+            dateOfBirth = "2000.02.24",
+            gender = "male",
+            age = 18,
+            cardHolderName = "D.Ransilu",
+            cardNumber = "343470789050",
+            expiryDate = "2025.02.24",
+            cvv = "675",
+            timeStamp = new Date().toISOString()
         } = req.body;
-
-        // Validate required fields
-        if (!name || !email || !cardNumber) {
-            return res.status(400).json({
-                error: "Missing required fields: name, email, and cardNumber are mandatory."
-            });
-        }
-
-        // Email validation
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            return res.status(400).json({
-                error: "Invalid email address format."
-            });
-        }
-
-        // Credit card number validation (12 digits)
-        const creditCardRegex = /^\d{12}$/;
-        if (!creditCardRegex.test(cardNumber)) {
-            return res.status(400).json({
-                error: "Invalid credit card number. It must be exactly 12 digits."
-            });
-        }
 
         // SQL query to insert a new customer
         const sql = `
@@ -352,28 +354,18 @@ app.post("/api/customers/", (req, res, next) => {
             timeStamp
         ];
 
-        // Execute the SQL query
+        // Insert the new customer
         db.run(sql, params, function (err) {
             if (err) {
-                
-                if (err.message.includes("UNIQUE constraint failed")) {
-                    return res.status(400).json({
-                        error: "Email already exists."
-                    });
-                }
-                return res.status(400).json({
-                    error: err.message
-                });
+                return res.status(400).json({ error: err.message });
             }
 
-           
             res.status(201).json({
                 message: `Customer ${name} has registered`,
                 customerId: this.lastID
             });
         });
     } catch (E) {
-        
         res.status(400).json({
             error: "An unexpected error occurred",
             details: E.message

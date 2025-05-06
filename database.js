@@ -29,7 +29,7 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
             } else {
                 // Table just created, creating some rows
                 var insert = 'INSERT INTO products (productName, description, category, brand, expiredDate, manufacturedDate, batchNumber, unitPrice, quantity, createdDate) VALUES (?,?,?,?,?,?,?,?,?,?)'
-                db.run(insert, ["White Basmathi Rice", "White Basmathi Rice imported from Pakistan. High-quality rice with extra fragrance. Organically grown.", "Rice", "CIC", "2023.05.04", "2022.02.20", 324567, , 1020, 200, "2022.02.24"])
+                db.run(insert, ["White Basmathi Rice", "White Basmathi Rice imported from Pakistan. High-quality rice with extra fragrance. Organically grown.", "Rice", "CIC", "2023.05.04", "2022.02.20", 324567, 1020, 200, "2022.02.24"]);
             }
         })
 
@@ -69,7 +69,24 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 console.error("Error creating customer table:", err.message);
             } else {
                 console.log("Customer table created successfully.");
-            }
+
+                var insert = `INSERT INTO customer 
+                (name, address, email, dateOfBirth, gender, age, cardHolderName, cardNumber, expiryDate, cvv, timeStamp) 
+                VALUES (?,?,?,?,?,?,?,?,?,?,?)`;
+                db.run(insert, [
+                    "Dulneth Ransilu",
+                    "354 Temple Road, Colombo",
+                    "Dransilu@gmail.com",
+                    "2000.02.24",
+                    "male",
+                    "23",
+                    "D.Ransilu",
+                    "343470789050",
+                    "2025.02.24",
+                    "675",
+                    new Date().toISOString()
+                ]);
+                }
         });
 
 
